@@ -5,8 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c47eb1e-de20-49c4-a4c4-44119fe3aeb4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/PlayerThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ClientTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ClientTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ServerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/ServerTest.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,19 +56,27 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.Game">
-    <configuration name="ClientTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="ClientTest" />
+  <component name="RunManager" selected="Application.ClientTest">
+    <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Client" />
       <module name="BSPoker" />
       <option name="PROGRAM_PARAMETERS" value="localhost 95" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Game" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Game" />
+    <configuration name="ClientTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ClientTest" />
       <module name="BSPoker" />
-      <option name="PROGRAM_PARAMETERS" value="3 6 8" />
+      <option name="PROGRAM_PARAMETERS" value="10.166.0.40 50000" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="GameServer" />
+      <module name="BSPoker" />
+      <option name="PROGRAM_PARAMETERS" value="95 2 3 5" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -72,7 +84,7 @@
     <configuration name="ServerTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ServerTest" />
       <module name="BSPoker" />
-      <option name="PROGRAM_PARAMETERS" value="95" />
+      <option name="PROGRAM_PARAMETERS" value="50000" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -86,10 +98,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Game" />
-        <item itemvalue="Application.Tests" />
         <item itemvalue="Application.ClientTest" />
         <item itemvalue="Application.ServerTest" />
+        <item itemvalue="Application.GameServer" />
+        <item itemvalue="Application.Client" />
+        <item itemvalue="Application.Tests" />
       </list>
     </recent_temporary>
   </component>
