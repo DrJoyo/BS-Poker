@@ -43,7 +43,7 @@ public class Player {
         out.println("t");
         out.flush();
         int move = Integer.parseInt(in.readLine());
-        game.broadcast(name + " said " + decodeMove(move));
+        game.broadcast("m" + name + " said " + decodeMove(move));
         return move;
     }
     public void promptName() throws IOException {
@@ -63,10 +63,12 @@ public class Player {
         return toReturn;
     }
     public String decodeMove(int input) {
-        if (input < 200) {
+        if (input == 0) {
+            return "BS";
+        } else if (input < 200) {
             throw new IllegalStateException();
         }
-        if (input < 400) {
+        else if (input < 400) {
             return "h " + RANKINGS[input % 200];
         } else if (input < 600) {
             return "p " + RANKINGS[input % 200];
@@ -87,6 +89,11 @@ public class Player {
         } else {
             throw new IllegalStateException();
         }
+    }
+    public void closeConnection() throws IOException {
+        in.close();
+        out.close();
+        socket.close();
     }
     public int getCardCount() {
         return cardCount;

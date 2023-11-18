@@ -5,12 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c47eb1e-de20-49c4-a4c4-44119fe3aeb4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ClientTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ClientTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ClientTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/ClientTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Game.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/Player.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ServerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/ServerTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ServerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ServerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +73,7 @@
     <configuration name="ClientTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ClientTest" />
       <module name="BSPoker" />
-      <option name="PROGRAM_PARAMETERS" value="10.166.0.40 50000" />
+      <option name="PROGRAM_PARAMETERS" value="localhost 8001" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -84,7 +89,7 @@
     <configuration name="ServerTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ServerTest" />
       <module name="BSPoker" />
-      <option name="PROGRAM_PARAMETERS" value="50000" />
+      <option name="PROGRAM_PARAMETERS" value="8000" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>

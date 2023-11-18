@@ -27,11 +27,9 @@ public class Client {
 
     }
     public void playGame() throws IOException {
-        System.out.println("playGame method run");
         String fromServer;
         boolean gameOver = false;
         while ((fromServer = in.readLine()) != null && !gameOver) {
-            System.out.println("message from server read");
             switch(fromServer.charAt(0)) {
                 case 't':
                     int move = getNextMove();
@@ -62,6 +60,9 @@ public class Client {
                     throw new IllegalStateException("Invalid response received from server");
             }
         }
+        in.close();
+        out.close();
+        conn.close();
     }
     public int getNextMove() throws IOException {
         int encoded;

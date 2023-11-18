@@ -16,17 +16,21 @@ public class GameServer {
     private int startingCards;
     private int eliminationCards;
     private int currentTotalCards;
-    private ArrayList<Player> playerList = new ArrayList<Player>();
+    private ArrayList<Player> playerList = new ArrayList<>();
+    private ArrayList<Player> inList;
     private int turn;
     private boolean gameOver;
     private ServerSocket serverSocket;
+    private ServerSocket serverSocket2;
 
     public GameServer(int port, int playerCount, int startingCards, int eliminationCards) throws IOException {
         this.playerCount = playerCount;
         this.startingCards = startingCards;
         this.eliminationCards = eliminationCards;
         this.serverSocket = new ServerSocket(port);
-        waitForPlayers();
+        this.serverSocket2 = new ServerSocket(8001);
+        twoLocalPlayerTest();
+        //waitForPlayers();
     }
 
     public void addPlayer() throws IOException {
@@ -43,10 +47,28 @@ public class GameServer {
             addPlayer();
         }
     }
+    public void twoLocalPlayerTest() throws IOException {
+        System.out.println("Waiting for player to connect...");
+        Socket socket = serverSocket.accept();
+        System.out.println("Player connected. Waiting for them to enter name.");
+        Player newPlayer = new Player(this, startingCards, socket);
+        playerList.add(newPlayer);
+        newPlayer.promptName();
+        System.out.println(newPlayer.getName() + " joined!");
+
+        System.out.println("Waiting for player to connect...");
+        Socket socket2 = serverSocket2.accept();
+        System.out.println("Player connected. Waiting for them to enter name.");
+        Player newPlayer2 = new Player(this, startingCards, socket2);
+        playerList.add(newPlayer2);
+        newPlayer2.promptName();
+        System.out.println(newPlayer2.getName() + " joined!");
+    }
     public void gameLoop() throws IOException {
         random = new Random();
         currentTotalCards = startingCards * playerCount;
         turn = random.nextInt(playerCount);
+        inList = (ArrayList<Player>) playerList.clone();
         int currentHand;
         int response;
         boolean bs;
@@ -57,16 +79,15 @@ public class GameServer {
             dealCards();
             showEveryoneCards();
             while (!bs) {
-                response = playerList.get(turn).promptMove(currentHand);
+                response = inList.get(turn).promptMove(currentHand);
                 if (response == 0) {
                     bs = true;
-                    broadcast("m" + playerList.get(turn).getName() + " called BS!");
                     if (handExists(currentHand)) {
-                        broadcast("mThe hand existed. " + playerList.get(turn).getName() + " gets an extra card.");
+                        broadcast("mThe hand existed. " + inList.get(turn).getName() + " gets an extra card.");
                         handleLoss();
                     } else {
                         turn = Math.floorMod(turn - 1, playerCount);
-                        broadcast("mThe hand did not exist. " + playerList.get(turn).getName() + " gets an extra card.");
+                        broadcast("mThe hand did not exist. " + inList.get(turn).getName() + " gets an extra card.");
                         handleLoss();
                     }
                 } else {
@@ -78,19 +99,23 @@ public class GameServer {
                 }
             }
         }
+        for (Player p : playerList) {
+            p.closeConnection();
+        }
+
     }
     /** Adds a card to the player whose turn it is */
     public void handleLoss() {
-        Player lost = playerList.get(turn);
+        Player lost = inList.get(turn);
         lost.incrementCardCount();
         currentTotalCards++;
         if (lost.getCardCount() >= eliminationCards) {
             broadcast("m" + lost.getName() + " is eliminated!");
-            playerList.remove(turn);
+            inList.remove(turn);
             playerCount--;
             turn = turn % playerCount;
-            if (playerList.size() == 1) {
-                broadcast("m" + playerList.get(0).getName() + " wins!");
+            if (inList.size() == 1) {
+                broadcast("m" + inList.get(0).getName() + " wins!");
                 broadcast("g");
                 gameOver = true;
             }
