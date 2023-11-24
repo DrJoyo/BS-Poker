@@ -15,10 +15,14 @@ public class GameServer {
     private int playerCount;
     private int startingCards;
     private int eliminationCards;
+    private int port;
     private int currentTotalCards;
     private ArrayList<Player> playerList = new ArrayList<>();
     private ArrayList<Player> inList;
-    private int turn;
+    private int turn = -1;
+    private int currentHand;
+    private ArrayList<Integer> combinedCards;
+    private boolean gameStarted;
     private boolean gameOver;
     private ServerSocket serverSocket;
     private ServerSocket serverSocket2;
@@ -27,10 +31,7 @@ public class GameServer {
         this.playerCount = playerCount;
         this.startingCards = startingCards;
         this.eliminationCards = eliminationCards;
-        this.serverSocket = new ServerSocket(port);
-        this.serverSocket2 = new ServerSocket(8001);
-        twoLocalPlayerTest();
-        //waitForPlayers();
+        this.port = port;
     }
 
     public void addPlayer() throws IOException {
@@ -39,85 +40,115 @@ public class GameServer {
         System.out.println("Player connected. Waiting for them to enter name.");
         Player newPlayer = new Player(this, startingCards, socket);
         playerList.add(newPlayer);
-        newPlayer.promptName();
-        System.out.println(newPlayer.getName() + " joined!");
+        System.out.println(newPlayer.getMyName() + " joined!");
     }
-    public void waitForPlayers() throws IOException {
-        for (int i = 0; i < playerCount; i++) {
-            addPlayer();
+    public void removePlayer(Player p) {
+        if (inList.remove(p)) {
+            playerCount--;
+        }
+        playerList.remove(p);
+        System.out.println(p.getMyName() + " has quit.");
+
+        if (!gameOver && inList.size() == 1) {
+            broadcast("m" + inList.get(0).getMyName() + " wins!");
+            broadcast("g");
+            gameOver = true;
+        }
+        if (playerCount > 0) {
+            turn = turn % playerCount;
         }
     }
-    public void twoLocalPlayerTest() throws IOException {
-        System.out.println("Waiting for player to connect...");
-        Socket socket = serverSocket.accept();
-        System.out.println("Player connected. Waiting for them to enter name.");
-        Player newPlayer = new Player(this, startingCards, socket);
-        playerList.add(newPlayer);
-        newPlayer.promptName();
-        System.out.println(newPlayer.getName() + " joined!");
-
-        System.out.println("Waiting for player to connect...");
-        Socket socket2 = serverSocket2.accept();
-        System.out.println("Player connected. Waiting for them to enter name.");
-        Player newPlayer2 = new Player(this, startingCards, socket2);
-        playerList.add(newPlayer2);
-        newPlayer2.promptName();
-        System.out.println(newPlayer2.getName() + " joined!");
-    }
-    public void gameLoop() throws IOException {
-        random = new Random();
-        currentTotalCards = startingCards * playerCount;
-        turn = random.nextInt(playerCount);
-        inList = (ArrayList<Player>) playerList.clone();
-        int currentHand;
-        int response;
-        boolean bs;
-        gameOver = false;
-        while (!gameOver) {
-            bs = false;
-            currentHand = 1;
-            dealCards();
-            showEveryoneCards();
-            while (!bs) {
-                response = inList.get(turn).promptMove(currentHand);
-                if (response == 0) {
-                    bs = true;
-                    if (handExists(currentHand)) {
-                        broadcast("mThe hand existed. " + inList.get(turn).getName() + " gets an extra card.");
-                        handleLoss();
-                    } else {
-                        turn = Math.floorMod(turn - 1, playerCount);
-                        broadcast("mThe hand did not exist. " + inList.get(turn).getName() + " gets an extra card.");
-                        handleLoss();
-                    }
-                } else {
-                    if (response <= currentHand) {
-                        throw new IllegalStateException("Hand was lower than current hand");
-                    }
-                    currentHand = response;
-                    turn = (turn + 1) % playerCount;
+    public void init() throws IOException {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            int joined = 0;
+            while (!gameStarted) {
+                System.out.println("Waiting for player to connect...");
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client connected");
+                System.out.println("Client address:");
+                System.out.println(clientSocket.getInetAddress());
+                System.out.println("-----");
+                Player newPlayer = new Player(this, startingCards, clientSocket);
+                playerList.add(newPlayer);
+                newPlayer.start();
+                joined++;
+                if (joined >= playerCount) {
+                    random = new Random();
+                    currentTotalCards = startingCards * playerCount;
+                    inList = (ArrayList<Player>) playerList.clone();
+                    currentHand = 1;
+                    dealCards();
+                    showEveryoneCards();
+                    turn = random.nextInt(playerCount);
+                    gameStarted = true;
                 }
             }
-        }
-        for (Player p : playerList) {
-            p.closeConnection();
+            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+            String broadcastMessage;
+            while (!gameOver) {
+                if (stdIn.ready()) {
+                    broadcastMessage = stdIn.readLine();
+                    if (broadcastMessage.equals("ENDGAME")) {
+                        gameOver = true;
+                        broadcast("m" + "Game closed by server.");
+                        broadcast("g");
+                        for (Player p : playerList) {
+                            p.closeConnection();
+                        }
+                    } else {
+                        broadcast("m" + broadcastMessage);
+                    }
+                }
+            }
+            System.out.println("Game over");
+        } catch (IOException e) {
+            System.out.println("Port already in use!");
+            System.out.println(e.toString());
         }
 
     }
+
+    public void processMove(int response) throws IOException {
+        gameStarted = false;
+        if (response == 0) {
+            if (handExists(currentHand)) {
+                broadcast("mThe hand existed. " + inList.get(turn).getMyName() + " gets an extra card.");
+            } else {
+                turn = Math.floorMod(turn - 1, playerCount);
+                broadcast("mThe hand did not exist. " + inList.get(turn).getMyName() + " gets an extra card.");
+            }
+            handleLoss();
+            if (!gameOver) {
+                currentHand = 1;
+                dealCards();
+                showEveryoneCards();
+            }
+        } else {
+            if (response <= currentHand) {
+                throw new IllegalStateException("Hand was lower than current hand");
+            }
+            currentHand = response;
+            turn = (turn + 1) % playerCount;
+        }
+        gameStarted = true;
+    }
     /** Adds a card to the player whose turn it is */
-    public void handleLoss() {
+    public void handleLoss() throws IOException {
         Player lost = inList.get(turn);
         lost.incrementCardCount();
         currentTotalCards++;
         if (lost.getCardCount() >= eliminationCards) {
-            broadcast("m" + lost.getName() + " is eliminated!");
+            broadcast("m" + lost.getMyName() + " is eliminated!");
             inList.remove(turn);
             playerCount--;
             turn = turn % playerCount;
             if (inList.size() == 1) {
-                broadcast("m" + inList.get(0).getName() + " wins!");
+                broadcast("m" + inList.get(0).getMyName() + " wins!");
                 broadcast("g");
                 gameOver = true;
+                for (Player p : playerList) {
+                    p.closeConnection();
+                }
             }
         }
         if (currentTotalCards == 52) {
@@ -126,44 +157,48 @@ public class GameServer {
     }
     public void dealCards() {
         ArrayList<Integer> deck = new ArrayList<>();
+        combinedCards = new ArrayList<>();
         for (int i = 0; i < 52; i++) {
             deck.add(i);
         }
-        for (Player p : playerList) {
+        for (Player p : inList) {
             ArrayList<Integer> hand = new ArrayList<>();
             for (int i = 0; i < p.getCardCount(); i++) {
                 hand.add(deck.remove(random.nextInt(deck.size())));
             }
+            combinedCards.addAll(hand);
             p.setCards(hand);
         }
     }
+    /** Checks if the current hand exists and broadcasts the combined list of cards to everyone */
     public boolean handExists(int handToCheck) {
-        ArrayList<Integer> combined = new ArrayList<>();
-        for (Player p : playerList) {
-            combined.addAll(p.getCards());
+        Collections.sort(combinedCards);
+        String allCards = "";
+        for (int card : combinedCards) {
+            allCards += Player.numToCard(card) + " ";
         }
-        Collections.sort(combined);
+        broadcast("m" + "The combined cards are " + allCards);
         if (handToCheck < 200) {
             throw new IllegalStateException();
         }
         if (handToCheck < 400) {
-            return HandChecker.highExists(combined, handToCheck % 200);
+            return HandChecker.highExists(combinedCards, handToCheck % 200);
         } else if (handToCheck < 600) {
-            return HandChecker.pairExists(combined, handToCheck % 200);
+            return HandChecker.pairExists(combinedCards, handToCheck % 200);
         } else if (handToCheck < 800) {
-            return HandChecker.twoPairExists(combined, (handToCheck % 200) / 13, (handToCheck % 200) % 13);
+            return HandChecker.twoPairExists(combinedCards, (handToCheck % 200) / 13, (handToCheck % 200) % 13);
         } else if (handToCheck < 1000) {
-            return HandChecker.tripsExists(combined, handToCheck % 200);
+            return HandChecker.tripsExists(combinedCards, handToCheck % 200);
         } else if (handToCheck < 1200) {
-            return HandChecker.straightExists(combined, handToCheck % 200);
+            return HandChecker.straightExists(combinedCards, handToCheck % 200);
         } else if (handToCheck < 1400) {
-            return HandChecker.flushExists(combined, (handToCheck % 200) / 13, (handToCheck % 200) % 13);
+            return HandChecker.flushExists(combinedCards, (handToCheck % 200) / 13, (handToCheck % 200) % 13);
         } else if (handToCheck < 1600) {
-            return HandChecker.fullHouseExists(combined, (handToCheck % 200) / 13, (handToCheck % 200) % 13);
+            return HandChecker.fullHouseExists(combinedCards, (handToCheck % 200) / 13, (handToCheck % 200) % 13);
         } else if (handToCheck < 1800) {
-            return HandChecker.quadsExists(combined, handToCheck % 200);
+            return HandChecker.quadsExists(combinedCards, handToCheck % 200);
         } else if (handToCheck < 2000) {
-            return HandChecker.straightFlushExists(combined, (handToCheck % 200) / 13, (handToCheck % 200) % 13);
+            return HandChecker.straightFlushExists(combinedCards, (handToCheck % 200) / 13, (handToCheck % 200) % 13);
         } else {
             throw new IllegalStateException();
         }
@@ -174,9 +209,21 @@ public class GameServer {
         }
     }
     public void showEveryoneCards() {
-        for (Player p : playerList) {
+        for (Player p : inList) {
             p.sendMessage("m" + "Your hand is " + p.stringOfCards());;
         }
+    }
+    public Player getTurnPlayer() {
+        return inList.get(turn);
+    }
+    public int getCurrentHand() {
+        return this.currentHand;
+    }
+    public boolean getGameStarted() {
+        return this.gameStarted;
+    }
+    public boolean getGameOver() {
+        return this.gameOver;
     }
 
     public static void main(String[] args) throws IOException {
@@ -185,6 +232,6 @@ public class GameServer {
         }
 
         GameServer game = new GameServer(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
-        game.gameLoop();
+        game.init();
     }
 }

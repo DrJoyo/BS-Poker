@@ -16,13 +16,14 @@ public class ClientTest {
         // get socket I/O stream and perform processing
         // InputStream to receive information from server
         // OutputStream to send information to server
-        PrintWriter out = new PrintWriter(conn.getOutputStream());
+        PrintWriter out = new PrintWriter(conn.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
         String fromUser;
         String fromServer;
-        while ((fromServer = in.readLine()) != null) {
+        while (true) {
+            fromServer = in.readLine();
             System.out.println("Server: " + fromServer);
             if (fromServer.equals("Bye")) {
                 break;

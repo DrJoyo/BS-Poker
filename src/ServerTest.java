@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,12 +19,14 @@ public class ServerTest {
         // get socket I/O stream and perform processing
         // InputStream to receive information from client
         // OutputStream to send information to client
-        PrintWriter out = new PrintWriter(conn.getOutputStream());
+        PrintWriter out = new PrintWriter(new BufferedWriter( new OutputStreamWriter(conn.getOutputStream())), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
+        System.out.println("Printing hi");
         out.println("Hi!");
-        out.flush();
+        System.out.println("Printed");
+        // out.flush();
 
         String fromUser;
         String fromClient;

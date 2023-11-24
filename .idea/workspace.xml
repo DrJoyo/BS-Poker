@@ -6,15 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="8c47eb1e-de20-49c4-a4c4-44119fe3aeb4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ClientTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/ClientTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Game.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GameServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ClientTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ClientTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/Player.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ServerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/ServerTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/PlayerThread.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/PlayerThread.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ServerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ServerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -61,11 +57,11 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.ClientTest">
+  <component name="RunManager" selected="Application.GameServer">
     <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Client" />
       <module name="BSPoker" />
-      <option name="PROGRAM_PARAMETERS" value="localhost 95" />
+      <option name="PROGRAM_PARAMETERS" value="0.tcp.us-cal-1.ngrok.io 11432" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -73,7 +69,7 @@
     <configuration name="ClientTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ClientTest" />
       <module name="BSPoker" />
-      <option name="PROGRAM_PARAMETERS" value="localhost 8001" />
+      <option name="PROGRAM_PARAMETERS" value="0.tcp.us-cal-1.ngrok.io 11432" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -81,7 +77,7 @@
     <configuration name="GameServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="GameServer" />
       <module name="BSPoker" />
-      <option name="PROGRAM_PARAMETERS" value="95 2 3 5" />
+      <option name="PROGRAM_PARAMETERS" value="3000 2 3 4" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -89,7 +85,7 @@
     <configuration name="ServerTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ServerTest" />
       <module name="BSPoker" />
-      <option name="PROGRAM_PARAMETERS" value="8000" />
+      <option name="PROGRAM_PARAMETERS" value="3000" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -103,10 +99,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.ClientTest" />
-        <item itemvalue="Application.ServerTest" />
         <item itemvalue="Application.GameServer" />
         <item itemvalue="Application.Client" />
+        <item itemvalue="Application.ClientTest" />
+        <item itemvalue="Application.ServerTest" />
         <item itemvalue="Application.Tests" />
       </list>
     </recent_temporary>

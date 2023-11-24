@@ -17,7 +17,7 @@ import java.util.ArrayList;
 1600: four of a kind
 1800: straight flush
  */
-public class Player {
+public class Player extends Thread {
     public static final String[] RANKINGS = {"2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"};
     public static final String[] SUITS = {"\u2663", "\u2666", "\u2665", "\u2660"};
     private String name;
@@ -25,7 +25,7 @@ public class Player {
     private int cardCount;
     private Socket socket;
     private PrintWriter out;
-    private BufferedReader in;
+
     private BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
     private ArrayList<Integer> cards;
 
@@ -33,24 +33,63 @@ public class Player {
         this.game = game;
         this.cardCount = cardCount;
         this.socket = socket;
-        out = new PrintWriter(socket.getOutputStream());
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        //out = new PrintWriter(socket.getOutputStream());
+        //in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    }
+    @Override
+    public void run() {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));) {
+            this.out = new PrintWriter(socket.getOutputStream(), true);
+            sendMessage("n");
+            System.out.println("Waiting for name...");
+            this.name = in.readLine();
+            String serverMessage = this.name + " joined!";
+            System.out.println(serverMessage);
+            String clientMessage;
+            while (socket.isConnected() && !socket.isClosed()) {
+                if (game.getGameStarted() && !game.getGameOver() && isMyTurn()) {
+                    promptMove(game.getCurrentHand());
+                    try {
+                        clientMessage = in.readLine();
+                        int move = Integer.parseInt(clientMessage);
+                        game.broadcast("m" + name + " said " + decodeMove(move));
+                        game.processMove(move);
+                    } catch (Exception e) {
+                        System.out.println(name + "'s move was interrupted.");
+                        break;
+                    }
+                } else {
+                    Thread.sleep(100);
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            game.removePlayer(this);
+            try {
+                socket.close();
+            } catch (IOException e) {
+                System.out.println(e.toString());
+            }
+            String serverMessage = "m" + name + " has quit.";
+            game.broadcast(serverMessage);
+        }
+    }
+    public boolean isMyTurn() {
+        return (game.getTurnPlayer() == this);
     }
     /** Prompts player to make a move given the current state of the game */
-    public int promptMove(int currentHand) throws IOException {
+    public void promptMove(int currentHand) throws IOException {
         out.println("c" + currentHand);
         out.println("m" + "It is your turn. Your hand is " + stringOfCards());
         out.println("t");
         out.flush();
-        int move = Integer.parseInt(in.readLine());
-        game.broadcast("m" + name + " said " + decodeMove(move));
-        return move;
     }
-    public void promptName() throws IOException {
-        sendMessage("n");
-        System.out.println("Name prompt sent");
-        this.name = in.readLine();
-    }
+//    public void promptName() throws IOException {
+//        sendMessage("n");
+//        System.out.println("Name prompt sent");
+//        this.name = in.readLine();
+//    }
     public void sendMessage(String message) {
         out.println(message);
         out.flush();
@@ -91,14 +130,13 @@ public class Player {
         }
     }
     public void closeConnection() throws IOException {
-        in.close();
         out.close();
         socket.close();
     }
     public int getCardCount() {
         return cardCount;
     }
-    public String getName() {
+    public String getMyName() {
         return name;
     }
     public ArrayList<Integer> getCards() {
