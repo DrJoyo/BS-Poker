@@ -35,13 +35,13 @@ Move code:
 - Royal flush: sf a (suit)
 
 Rank/Suit code:
-2 to 9: 2 to 9
-10: T
-Jack: J
-Queen: Q
-King: K
-Ace: A
-Clubs: C
-Diamond: D
-Hearts: H
-Spades: S
+- 2 to 9: 2 to 9
+- 10: T
+- Jack: J
+- Queen: Q
+- King: K
+- Ace: A
+- Clubs: C
+- Diamond: D
+- Hearts: H
+- Spades: S
