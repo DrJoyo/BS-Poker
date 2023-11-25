@@ -17,8 +17,8 @@ public class GameServer {
     private int eliminationCards;
     private int port;
     private int currentTotalCards;
-    private ArrayList<Player> playerList = new ArrayList<>();
-    private ArrayList<Player> inList;
+    private ArrayList<PlayerThread> playerList = new ArrayList<>();
+    private ArrayList<PlayerThread> inList;
     private int turn = -1;
     private int currentHand;
     private ArrayList<Integer> combinedCards;
@@ -38,11 +38,11 @@ public class GameServer {
         System.out.println("Waiting for player to connect...");
         Socket socket = serverSocket.accept();
         System.out.println("Player connected. Waiting for them to enter name.");
-        Player newPlayer = new Player(this, startingCards, socket);
+        PlayerThread newPlayer = new PlayerThread(this, startingCards, socket);
         playerList.add(newPlayer);
         System.out.println(newPlayer.getMyName() + " joined!");
     }
-    public void removePlayer(Player p) {
+    public void removePlayer(PlayerThread p) {
         if (inList.remove(p)) {
             playerCount--;
         }
@@ -68,14 +68,14 @@ public class GameServer {
                 System.out.println("Client address:");
                 System.out.println(clientSocket.getInetAddress());
                 System.out.println("-----");
-                Player newPlayer = new Player(this, startingCards, clientSocket);
+                PlayerThread newPlayer = new PlayerThread(this, startingCards, clientSocket);
                 playerList.add(newPlayer);
                 newPlayer.start();
                 joined++;
                 if (joined >= playerCount) {
                     random = new Random();
                     currentTotalCards = startingCards * playerCount;
-                    inList = (ArrayList<Player>) playerList.clone();
+                    inList = (ArrayList<PlayerThread>) playerList.clone();
                     currentHand = 1;
                     dealCards();
                     showEveryoneCards();
@@ -92,7 +92,7 @@ public class GameServer {
                         gameOver = true;
                         broadcast("m" + "Game closed by server.");
                         broadcast("g");
-                        for (Player p : playerList) {
+                        for (PlayerThread p : playerList) {
                             p.closeConnection();
                         }
                     } else {
@@ -134,7 +134,7 @@ public class GameServer {
     }
     /** Adds a card to the player whose turn it is */
     public void handleLoss() throws IOException {
-        Player lost = inList.get(turn);
+        PlayerThread lost = inList.get(turn);
         lost.incrementCardCount();
         currentTotalCards++;
         if (lost.getCardCount() >= eliminationCards) {
@@ -146,7 +146,7 @@ public class GameServer {
                 broadcast("m" + inList.get(0).getMyName() + " wins!");
                 broadcast("g");
                 gameOver = true;
-                for (Player p : playerList) {
+                for (PlayerThread p : playerList) {
                     p.closeConnection();
                 }
             }
@@ -161,7 +161,7 @@ public class GameServer {
         for (int i = 0; i < 52; i++) {
             deck.add(i);
         }
-        for (Player p : inList) {
+        for (PlayerThread p : inList) {
             ArrayList<Integer> hand = new ArrayList<>();
             for (int i = 0; i < p.getCardCount(); i++) {
                 hand.add(deck.remove(random.nextInt(deck.size())));
@@ -175,7 +175,7 @@ public class GameServer {
         Collections.sort(combinedCards);
         String allCards = "";
         for (int card : combinedCards) {
-            allCards += Player.numToCard(card) + " ";
+            allCards += PlayerThread.numToCard(card) + " ";
         }
         broadcast("m" + "The combined cards are " + allCards);
         if (handToCheck < 200) {
@@ -204,16 +204,16 @@ public class GameServer {
         }
     }
     public void broadcast(String message) {
-        for (Player p : playerList) {
+        for (PlayerThread p : playerList) {
             p.sendMessage(message);
         }
     }
     public void showEveryoneCards() {
-        for (Player p : inList) {
+        for (PlayerThread p : inList) {
             p.sendMessage("m" + "Your hand is " + p.stringOfCards());;
         }
     }
-    public Player getTurnPlayer() {
+    public PlayerThread getTurnPlayer() {
         return inList.get(turn);
     }
     public int getCurrentHand() {

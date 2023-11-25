@@ -17,7 +17,7 @@ import java.util.ArrayList;
 1600: four of a kind
 1800: straight flush
  */
-public class Player extends Thread {
+public class PlayerThread extends Thread {
     public static final String[] RANKINGS = {"2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"};
     public static final String[] SUITS = {"\u2663", "\u2666", "\u2665", "\u2660"};
     private String name;
@@ -29,7 +29,7 @@ public class Player extends Thread {
     private BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
     private ArrayList<Integer> cards;
 
-    public Player(GameServer game, int cardCount, Socket socket) throws IOException {
+    public PlayerThread(GameServer game, int cardCount, Socket socket) throws IOException {
         this.game = game;
         this.cardCount = cardCount;
         this.socket = socket;
